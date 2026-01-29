@@ -15,6 +15,7 @@ const world = {
   alarm: false,
   gameOver: false,
   gameWon: false,
+  alarmTimer: 0,
 };
 
 const obstacles = [
@@ -315,18 +316,7 @@ function updateUnits(dt) {
 function updateEnemies(dt) {
   for (const enemy of enemies) {
     const patrolTarget = enemy.patrol[enemy.patrolIndex];
-    if (world.alarm) {
-      const targetUnit = getNearestUnit(enemy);
-      if (targetUnit) {
-        enemy.state = "hunt";
-        enemy.target = { x: targetUnit.x, y: targetUnit.y };
-        moveTowards(enemy, enemy.target, enemy.speed + 50, dt);
-        if (distance(enemy, targetUnit) < 20) {
-          triggerCapture();
-          continue;
-        }
-      }
-    } else if (enemy.state === "patrol") {
+    if (enemy.state === "patrol") {
       if (moveTowards(enemy, patrolTarget, enemy.speed, dt)) {
         enemy.patrolIndex = (enemy.patrolIndex + 1) % enemy.patrol.length;
       }
@@ -376,6 +366,7 @@ function detectUnits() {
 
 function triggerAlarm(unit, source) {
   world.alarm = true;
+  world.alarmTimer = 6;
   if (source.lastSeen !== undefined) {
     source.state = "alert";
     source.lastSeen = { x: unit.x, y: unit.y };
@@ -387,6 +378,15 @@ function updateAlarm() {
     alarmStatus.innerHTML = "Alarm: <span style=\"color:#ff5c5c\">Triggered</span>";
   } else {
     alarmStatus.innerHTML = "Alarm: <span class=\"muted\">Silent</span>";
+function updateAlarm(dt) {
+  if (world.alarm) {
+    world.alarmTimer -= dt;
+    if (world.alarmTimer <= 0) {
+      world.alarm = false;
+      alarmStatus.innerHTML = "Alarm: <span class=\"muted\">Silent</span>";
+    } else {
+      alarmStatus.innerHTML = "Alarm: <span style=\"color:#ff5c5c\">Triggered</span>";
+    }
   }
 }
 
@@ -416,11 +416,14 @@ function updateGameOver() {
         return;
       }
     }
+  if (allExtracted) {
+    overlay.classList.remove("hidden");
   }
 }
 
 function update(dt) {
   if (world.paused || world.gameOver || world.gameWon) return;
+  if (world.paused) return;
   updateUnits(dt);
   updateEnemies(dt);
   updateCameras(dt);
@@ -429,6 +432,8 @@ function update(dt) {
   updateAlarm();
   updateExtraction();
   updateGameOver();
+  updateAlarm(dt);
+  updateExtraction();
 }
 
 function drawGrid() {
@@ -676,6 +681,10 @@ function resetMission() {
   world.alarm = false;
   world.gameOver = false;
   world.gameWon = false;
+function resetMission() {
+  overlay.classList.add("hidden");
+  world.alarm = false;
+  world.alarmTimer = 0;
   units[0].x = 80;
   units[0].y = 620;
   units[1].x = 120;
