@@ -399,7 +399,7 @@ function updateExtraction() {
   const allExtracted = units.every((unit) => pointInRect(unit, extractionZone));
   if (allExtracted && !world.gameOver) {
     world.gameWon = true;
-    showOverlay("Mission Complete", "All operatives extracted successfully.", "Restart Mission");
+    showOverlay("Mission Complete", "All operatives extracted successfully.");
   }
 }
 
@@ -407,9 +407,9 @@ function updateGameOver() {
   if (world.gameOver || world.gameWon) return;
   for (const enemy of enemies) {
     for (const unit of units) {
-      if (distance(enemy, unit) < 22) {
+      if (distance(enemy, unit) < 14) {
         world.gameOver = true;
-        showOverlay("Mission Failed", "Operatives captured. Try again.", "Try Again");
+        showOverlay("Mission Failed", "Operatives captured. Mission compromised.");
         return;
       }
     }
@@ -656,10 +656,9 @@ function useAbility(index) {
   }
 }
 
-function showOverlay(title, message, buttonLabel = "Restart Mission") {
+function showOverlay(title, message) {
   overlayTitle.textContent = title;
   overlayMessage.textContent = message;
-  restartBtn.textContent = buttonLabel;
   overlay.classList.remove("hidden");
 }
 
