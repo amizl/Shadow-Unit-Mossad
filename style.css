@@ -1,0 +1,209 @@
+:root {
+  color-scheme: dark;
+  font-family: "Inter", system-ui, sans-serif;
+  background: #0b0f14;
+  color: #e2e6ea;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: radial-gradient(circle at top, #132030, #0b0f14 50%);
+}
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 32px;
+  border-bottom: 1px solid #1b2a3a;
+  background: rgba(9, 14, 20, 0.9);
+  backdrop-filter: blur(6px);
+}
+
+.top-bar h1 {
+  margin: 0 0 6px;
+  font-size: 26px;
+}
+
+.top-bar p {
+  margin: 0;
+  color: #9fb0c3;
+}
+
+.status {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.status-item {
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: #111a24;
+  border: 1px solid #223246;
+}
+
+.status-item span {
+  font-weight: 600;
+}
+
+.main {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 18px;
+  padding: 24px 32px 32px;
+}
+
+.hud {
+  background: #101925;
+  border: 1px solid #1d2b3c;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.hud h2 {
+  margin: 0;
+  font-size: 18px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.hud ul {
+  margin: 0;
+  padding-left: 18px;
+  color: #c0cad5;
+}
+
+.hud li {
+  margin-bottom: 6px;
+}
+
+.unit-list {
+  display: grid;
+  gap: 10px;
+}
+
+.unit-card {
+  border: 1px solid #213247;
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: #0e151f;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+}
+
+.unit-card.active {
+  border-color: #4ad6ff;
+  box-shadow: 0 0 0 1px #4ad6ff;
+}
+
+.unit-card .title {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 600;
+}
+
+.unit-card .traits {
+  color: #91a4b8;
+  font-size: 12px;
+}
+
+.legend {
+  display: grid;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.legend-swatch {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-right: 8px;
+  border-radius: 2px;
+}
+
+.legend-swatch.vision {
+  background: rgba(255, 92, 92, 0.6);
+}
+
+.legend-swatch.sound {
+  background: rgba(255, 208, 92, 0.6);
+}
+
+.legend-swatch.smoke {
+  background: rgba(95, 170, 255, 0.6);
+}
+
+.legend-swatch.hide {
+  background: rgba(120, 255, 180, 0.6);
+}
+
+.legend-swatch.exit {
+  background: rgba(190, 140, 255, 0.6);
+}
+
+.canvas-wrap {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #1d2b3c;
+  background: #070b10;
+}
+
+canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(4, 8, 12, 0.85);
+}
+
+.overlay-card {
+  background: #111c2a;
+  border: 1px solid #2a3a50;
+  padding: 24px 28px;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.overlay-card button {
+  margin-top: 12px;
+  background: #4ad6ff;
+  border: none;
+  color: #0b1118;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.hidden {
+  display: none;
+}
+
+.muted {
+  color: #9fb0c3;
+}
