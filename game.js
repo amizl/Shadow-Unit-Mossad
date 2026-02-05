@@ -3,6 +3,8 @@ const ctx = canvas.getContext("2d");
 const unitList = document.getElementById("unitList");
 const alarmStatus = document.getElementById("alarmStatus");
 const overlay = document.getElementById("overlay");
+const overlayTitle = document.getElementById("overlayTitle");
+const overlayMessage = document.getElementById("overlayMessage");
 const restartBtn = document.getElementById("restartBtn");
 
 const world = {
@@ -11,6 +13,8 @@ const world = {
   paused: false,
   timeScale: 1,
   alarm: false,
+  gameOver: false,
+  gameWon: false,
   alarmTimer: 0,
 };
 
@@ -369,6 +373,11 @@ function triggerAlarm(unit, source) {
   }
 }
 
+function updateAlarm() {
+  if (world.alarm) {
+    alarmStatus.innerHTML = "Alarm: <span style=\"color:#ff5c5c\">Triggered</span>";
+  } else {
+    alarmStatus.innerHTML = "Alarm: <span class=\"muted\">Silent</span>";
 function updateAlarm(dt) {
   if (world.alarm) {
     world.alarmTimer -= dt;
@@ -392,18 +401,37 @@ function updateSmoke(dt) {
 
 function updateExtraction() {
   const allExtracted = units.every((unit) => pointInRect(unit, extractionZone));
+  if (allExtracted && !world.gameOver) {
+    world.gameWon = true;
+    showOverlay("Mission Complete", "All operatives extracted successfully.");
+  }
+}
+
+function updateGameOver() {
+  if (world.gameOver || world.gameWon) return;
+  for (const enemy of enemies) {
+    for (const unit of units) {
+      if (distance(enemy, unit) < 18) {
+        triggerCapture();
+        return;
+      }
+    }
   if (allExtracted) {
     overlay.classList.remove("hidden");
   }
 }
 
 function update(dt) {
+  if (world.paused || world.gameOver || world.gameWon) return;
   if (world.paused) return;
   updateUnits(dt);
   updateEnemies(dt);
   updateCameras(dt);
   updateSmoke(dt);
   detectUnits();
+  updateAlarm();
+  updateExtraction();
+  updateGameOver();
   updateAlarm(dt);
   updateExtraction();
 }
@@ -564,6 +592,19 @@ function handleLeftClick(pos, additive) {
   renderUnitList();
 }
 
+function getNearestUnit(enemy) {
+  let closest = null;
+  let closestDist = Infinity;
+  for (const unit of units) {
+    const dist = distance(enemy, unit);
+    if (dist < closestDist) {
+      closestDist = dist;
+      closest = unit;
+    }
+  }
+  return closest;
+}
+
 function toggleDoorAt(pos) {
   for (const door of doors) {
     if (pointInRect(pos, door)) {
@@ -623,6 +664,23 @@ function useAbility(index) {
   }
 }
 
+function showOverlay(title, message) {
+  overlayTitle.textContent = title;
+  overlayMessage.textContent = message;
+  overlay.classList.remove("hidden");
+}
+
+function triggerCapture() {
+  if (world.gameOver || world.gameWon) return;
+  world.gameOver = true;
+  showOverlay("Mission Failed", "Operatives captured. Mission compromised.");
+}
+
+function resetMission() {
+  overlay.classList.add("hidden");
+  world.alarm = false;
+  world.gameOver = false;
+  world.gameWon = false;
 function resetMission() {
   overlay.classList.add("hidden");
   world.alarm = false;
@@ -645,6 +703,8 @@ function resetMission() {
   enemies.forEach((enemy) => {
     enemy.state = "patrol";
     enemy.patrolIndex = 0;
+    enemy.target = null;
+    enemy.lastSeen = null;
   });
   renderUnitList();
 }
